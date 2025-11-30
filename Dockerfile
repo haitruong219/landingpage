@@ -51,12 +51,22 @@
     COPY --from=builder /app/.next/static ./.next/static
     COPY --from=builder /app/prisma ./prisma
     
+    # Copy package.json để Prisma biết output path (cần cho prisma generate)
+    COPY --from=builder /app/package.json ./package.json
+    
     # Copy node_modules từ deps (chứa dependencies cần thiết để chạy)
     COPY --from=deps /app/node_modules ./node_modules
+    
+    # Copy Prisma client đã generate từ builder (bao gồm cả .prisma và @prisma)
+    COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+    COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
     
     # Cài Prisma CLI vào production image để có `prisma` sẵn
     # Dùng --no-save để không thay package.json
     RUN npm install --legacy-peer-deps --no-save prisma@5.7.0
+    
+    # Không cần generate lại vì đã copy Prisma client từ builder
+    # Prisma client đã được generate với schema đúng trong builder stage
     
     # (Tùy chọn) cài Prisma Client phiên bản tương thích nếu cần
     # RUN npm install --legacy-peer-deps --no-save @prisma/client@5.7.0
