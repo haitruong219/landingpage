@@ -23,6 +23,11 @@ export async function middleware(request: NextRequest) {
         loginUrl.host = request.headers.get('host') || ''
         return NextResponse.redirect(loginUrl)
       }
+    } else {
+      const response = NextResponse.next()
+      response.headers.set('x-is-login-page', 'true')
+      response.headers.set('x-pathname', pathname)
+      return response
     }
   }
   

@@ -16,6 +16,9 @@ const nextConfig = {
     ],
   },
   compress: true,
+  async generateBuildId() {
+    return process.env.BUILD_ID || Date.now().toString()
+  },
 }
 
 module.exports = nextConfig

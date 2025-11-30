@@ -18,8 +18,14 @@ export function ProductsCarousel() {
   useEffect(() => {
     fetch('/api/products')
       .then(res => res.json())
-      .then(data => setProducts(data))
-      .catch(() => {})
+      .then(data => {
+        if (Array.isArray(data)) {
+          setProducts(data)
+        } else {
+          setProducts([])
+        }
+      })
+      .catch(() => setProducts([]))
   }, [])
 
   if (products.length === 0) {

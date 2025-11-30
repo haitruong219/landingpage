@@ -3,6 +3,8 @@ import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Chính sách',
   description: 'Chính sách bảo mật và điều khoản sử dụng',

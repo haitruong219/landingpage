@@ -28,16 +28,16 @@ services:
     env_file:
       - .env
     environment:
-      # Override DATABASE_URL để đảm bảo hostname là 'postgres' trong Docker network
-      # (không dùng localhost từ .env)
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-landingpage}?schema=public
-      # Override NODE_ENV nếu cần
       NODE_ENV: ${NODE_ENV:-production}
+      UID: ${UID:-1000}
+      GID: ${GID:-1000}
     volumes:
-      - ./prisma:/app/prisma
+      - .:/app
     depends_on:
       postgres:
         condition: service_healthy
+    command: sh -c "npm run dev"
 
 volumes:
   postgres_data:

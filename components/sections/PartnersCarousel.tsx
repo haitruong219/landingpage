@@ -16,8 +16,14 @@ export function PartnersCarousel() {
   useEffect(() => {
     fetch('/api/partners')
       .then(res => res.json())
-      .then(data => setPartners(data))
-      .catch(() => {})
+      .then(data => {
+        if (Array.isArray(data)) {
+          setPartners(data)
+        } else {
+          setPartners([])
+        }
+      })
+      .catch(() => setPartners([]))
   }, [])
 
   if (partners.length === 0) {

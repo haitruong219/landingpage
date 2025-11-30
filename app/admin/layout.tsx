@@ -1,18 +1,53 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+'use client'
+
+import { usePathname, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { SignOutButton } from './layout/SignOutButton'
+import { useEffect, useState } from 'react'
 
-export default async function AdminLayout({
+const useSafeSession = () => {
+  try {
+    const result = useSession()
+    return result || { data: null, status: 'loading' as const }
+  } catch {
+    return { data: null, status: 'loading' as const }
+  }
+}
+
+const AdminLayout = ({
   children,
 }: {
   children: React.ReactNode
-}) {
-  const session = await getServerSession(authOptions)
+}) => {
+  const pathname = usePathname()
+  const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+  const sessionResult = useSafeSession()
+  const session = sessionResult?.data
+  const status = sessionResult?.status || 'loading'
+  const isLoginPage = pathname === '/admin/login'
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && status === 'unauthenticated' && !isLoginPage) {
+      router.push('/admin/login')
+    }
+  }, [mounted, status, isLoginPage, router])
+
+  if (isLoginPage) {
+    return <>{children}</>
+  }
+
+  if (!mounted || status === 'loading') {
+    return <div>Loading...</div>
+  }
 
   if (!session) {
-    redirect('/admin/login')
+    return null
   }
 
   return (
@@ -73,3 +108,4 @@ export default async function AdminLayout({
   )
 }
 
+export default AdminLayout
