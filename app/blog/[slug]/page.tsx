@@ -10,24 +10,30 @@ interface BlogPostPageProps {
   params: { slug: string }
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
-    include: { category: true },
-  })
+  try {
+    const post = await prisma.post.findUnique({
+      where: { slug: params.slug },
+      include: { category: true },
+    })
 
-  if (!post || !post.published) {
-    return {}
-  }
+    if (!post || !post.published) {
+      return {}
+    }
 
-  return {
-    title: post.title,
-    description: post.excerpt || post.content.substring(0, 160),
-    openGraph: {
+    return {
       title: post.title,
       description: post.excerpt || post.content.substring(0, 160),
-      images: post.coverImage ? [post.coverImage] : [],
-    },
+      openGraph: {
+        title: post.title,
+        description: post.excerpt || post.content.substring(0, 160),
+        images: post.coverImage ? [post.coverImage] : [],
+      },
+    }
+  } catch (error) {
+    return {}
   }
 }
 

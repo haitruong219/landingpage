@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminContactsPage() {
   const contacts = await prisma.contact.findMany({
     orderBy: { createdAt: 'desc' },

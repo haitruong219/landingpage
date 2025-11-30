@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   },
 }
 
+export const dynamic = 'force-dynamic'
+
 interface BlogPageProps {
   searchParams: { page?: string; category?: string }
 }

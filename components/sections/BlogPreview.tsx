@@ -5,12 +5,27 @@ import { formatDate } from '@/lib/utils'
 import Image from 'next/image'
 
 export async function BlogPreview() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    take: 4,
-    orderBy: { createdAt: 'desc' },
-    include: { category: true },
-  })
+  let posts: Array<{
+    id: string
+    title: string
+    slug: string
+    excerpt: string | null
+    content: string
+    coverImage: string | null
+    createdAt: Date
+    category: { name: string } | null
+  }> = []
+
+  try {
+    posts = await prisma.post.findMany({
+      where: { published: true },
+      take: 4,
+      orderBy: { createdAt: 'desc' },
+      include: { category: true },
+    })
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+  }
 
   if (posts.length === 0) {
     return null

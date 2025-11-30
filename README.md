@@ -46,61 +46,53 @@ Sau khi lưu file, truy cập:
 
 ## Cài đặt
 
-### Cách 1: Development với Docker (Khuyến nghị)
+### Cách 1: Production với Docker (Khuyến nghị)
 
 ```bash
-# Chạy cả app và database trong Docker
-make dev-docker
+# 1. Tạo file .env từ .env.example (hoặc Makefile sẽ tự động tạo)
+cp .env.example .env
 
-# Hoặc thủ công:
-docker-compose -f docker-compose.dev.yml up
+# 2. Chỉnh sửa file .env với các giá trị thực tế
+# Đặc biệt quan trọng: NEXTAUTH_SECRET (generate bằng: openssl rand -base64 32)
+
+# 3. Build Docker image
+make build
+
+# 4. Start containers (postgres + app)
+make up
+
+# 5. Chạy migrations
+make migrate-deploy
+
+# 6. (Optional) Seed database với dữ liệu mẫu
+make seed
 ```
 
-Sau khi containers chạy, mở terminal khác để chạy migrations:
-```bash
-docker-compose -f docker-compose.dev.yml exec app npx prisma migrate dev
-```
-
-### Cách 2: Development local (chỉ database trong Docker)
+### Cách 2: Development local (không dùng Docker)
 
 ```bash
-# Setup database với Docker
-make db-up
+# 1. Setup PostgreSQL database (có thể dùng Docker chỉ cho DB)
+docker-compose up -d postgres
 
-# Cài đặt dependencies
-make install
+# 2. Tạo file .env từ .env.example
+cp .env.example .env
 
-# Generate Prisma client
-make db-generate
+# 3. Chỉnh sửa DATABASE_URL trong .env (dùng localhost)
+# DATABASE_URL=postgresql://postgres:postgres@localhost:5432/landingpage?schema=public
 
-# Chạy migrations
-make db-migrate
+# 4. Cài đặt dependencies
+npm install
 
-# Chạy dev server
-make dev
-```
+# 5. Generate Prisma client
+npx prisma generate
 
-### Cách 3: Production với Docker
+# 6. Chạy migrations
+npx prisma migrate dev
 
-```bash
-# Build và chạy production
-make docker-build
-make docker-up
+# 7. (Optional) Seed database
+npm run db:seed
 
-# Chạy migrations trong container
-docker-compose exec app npx prisma migrate deploy
-```
-
-## Chạy Development Server
-
-```bash
-# Với Makefile (local)
-make dev
-
-# Với Docker
-make dev-docker
-
-# Hoặc thủ công
+# 8. Chạy dev server
 npm run dev
 ```
 
@@ -111,39 +103,41 @@ Xem tất cả commands có sẵn:
 make help
 ```
 
-Một số commands hữu ích:
+Các commands chính:
 ```bash
-make docker-up          # Khởi động tất cả services
-make docker-down        # Dừng tất cả services
-make docker-logs        # Xem logs
-make docker-restart     # Restart services
-make docker-clean       # Xóa containers và volumes
+make build          # Build Docker image
+make up             # Start containers (postgres + app)
+make down           # Stop containers (giữ volumes)
+make logs           # Xem logs của containers
+make migrate-dev    # Chạy dev migrations (interactive)
+make migrate-deploy # Chạy production migrations (non-interactive)
+make seed           # Chạy seed script
+make reset          # Reset database (xóa volumes và chạy lại migrations)
 ```
 
-## Database Commands
-
-```bash
-make db-up              # Khởi động PostgreSQL
-make db-down            # Dừng PostgreSQL
-make db-migrate         # Chạy migrations
-make db-reset           # Reset database
-make db-seed            # Seed database (tạo admin user mẫu)
-make db-studio          # Mở Prisma Studio
-```
+**Lưu ý:** 
+- `make build` và `make up` sẽ tự động tạo file `.env` từ `.env.example` nếu chưa có
+- Trong Docker, `DATABASE_URL` sẽ tự động dùng hostname `postgres` thay vì `localhost`
 
 ## Tạo Admin User
 
 Sau khi setup database, bạn có thể:
-1. Chạy seed để tạo admin user mẫu:
+1. Chạy seed để tạo admin user mẫu (nếu có seed script):
    ```bash
-   make db-seed
+   make seed
    ```
-   Email: `admin@example.com`
-   Password: `admin123`
+   Hoặc nếu chạy local:
+   ```bash
+   npm run db:seed
+   ```
 
 2. Hoặc tạo user mới thủ công qua Prisma Studio:
    ```bash
-   make db-studio
+   # Trong Docker
+   docker-compose exec app npx prisma studio
+   
+   # Hoặc local
+   npx prisma studio
    ```
 
 ## Environment Variables
@@ -154,18 +148,42 @@ Tạo file `.env` từ `.env.example`:
 cp .env.example .env
 ```
 
+Hoặc Makefile sẽ tự động tạo khi chạy `make build` hoặc `make up`.
+
 Sau đó chỉnh sửa file `.env` và điền các giá trị:
 
+### Database
+- **POSTGRES_USER**: Username cho PostgreSQL (mặc định: `postgres`)
+- **POSTGRES_PASSWORD**: Password cho PostgreSQL (mặc định: `postgres`)
+- **POSTGRES_DB**: Tên database (mặc định: `landingpage`)
+- **POSTGRES_PORT**: Port PostgreSQL (mặc định: `5432`)
 - **DATABASE_URL**: Connection string cho PostgreSQL
-- **NEXTAUTH_SECRET**: Secret key cho NextAuth (generate random string)
-- **NEXTAUTH_URL**: URL của ứng dụng
-- **SMTP_***: Cấu hình email SMTP để gửi thông báo
+  - Local: `postgresql://postgres:postgres@localhost:5432/landingpage?schema=public`
+  - Docker: Sẽ tự động dùng hostname `postgres` thay vì `localhost`
+
+### App
+- **APP_PORT**: Port của ứng dụng (mặc định: `3000`)
+- **NODE_ENV**: Environment (`production` hoặc `development`)
+
+### NextAuth
+- **NEXTAUTH_SECRET**: Secret key cho NextAuth (bắt buộc, generate: `openssl rand -base64 32`)
+- **NEXTAUTH_URL**: URL của ứng dụng (mặc định: `http://localhost:3000`)
+
+### SMTP Email Configuration
+- **SMTP_HOST**: SMTP server host
+- **SMTP_PORT**: SMTP port (mặc định: `587`)
+- **SMTP_USER**: SMTP username
+- **SMTP_PASS**: SMTP password
+
+### Admin & Webhook
 - **ADMIN_EMAIL**: Email nhận thông báo từ contact form
 - **WEBHOOK_URL**: (Optional) URL webhook cho third-party integrations
+- **NEXT_PUBLIC_ADMIN_SUBDOMAIN**: Subdomain cho admin panel (mặc định: `admin`)
 
 **Lưu ý:** 
 - Đối với Gmail, bạn cần tạo App Password thay vì dùng mật khẩu thường
-- Generate NEXTAUTH_SECRET: `openssl rand -base64 32`
+- **NEXTAUTH_SECRET** là bắt buộc và phải được generate ngẫu nhiên
+- Trong Docker, `DATABASE_URL` sẽ tự động được build từ các biến `POSTGRES_*` với hostname là `postgres`
 
 ## Production Setup
 

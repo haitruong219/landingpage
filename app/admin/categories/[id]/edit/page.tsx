@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import EditCategoryForm from './EditCategoryForm'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 
+export const dynamic = 'force-dynamic'
+
 interface EditCategoryPageProps {
   params: { id: string }
 }

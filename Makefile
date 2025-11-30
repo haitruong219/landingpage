@@ -1,96 +1,60 @@
-.PHONY: help install dev build start stop clean db-up db-down db-reset db-migrate db-seed docker-build docker-up docker-down docker-logs docker-restart test lint format
+.PHONY: help build up down logs migrate-deploy migrate-dev seed reset
 
-help: ## Hiển thị danh sách commands
-	@echo "Available commands:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+DC = docker-compose
+COMPOSE = -f docker-compose.yml
 
-install: ## Cài đặt dependencies
-	npm install
+help:
+	@echo "Targets: build up down logs migrate-dev migrate-deploy seed reset"
+	@echo ""
+	@echo "Usage:"
+	@echo "  make build          - Build Docker image"
+	@echo "  make up             - Start containers"
+	@echo "  make down           - Stop containers"
+	@echo "  make migrate-dev    - Run dev migrations"
+	@echo "  make migrate-deploy - Run production migrations"
+	@echo "  make seed           - Run seed script"
+	@echo "  make reset          - Reset database"
+	@echo "  make logs           - Show logs"
 
-dev: ## Chạy development server
-	npm run dev
+build: ## build app image
+	@if [ ! -f .env ]; then \
+		echo "Warning: .env file not found. Creating from .env.example..."; \
+		cp .env.example .env 2>/dev/null || echo "Please create .env file from .env.example"; \
+	fi
+	$(DC) $(COMPOSE) build app
 
-build: ## Build production
-	npm run build
+up: ## start postgres + app (detached)
+	@if [ ! -f .env ]; then \
+		echo "Warning: .env file not found. Creating from .env.example..."; \
+		cp .env.example .env 2>/dev/null || echo "Please create .env file from .env.example"; \
+	fi
+	$(DC) $(COMPOSE) up -d
+	@echo "Đã start containers. Chờ postgres ready..."
 
-start: ## Chạy production server
-	npm start
+_wait_pg_ready:
+	@$(DC) $(COMPOSE) up -d postgres
+	@$(DC) $(COMPOSE) exec -T postgres sh -c 'until pg_isready -U "${POSTGRES_USER:-postgres}"; do sleep 1; done'
+	@echo "Postgres is ready."
 
-stop: ## Dừng development server
-	@pkill -f "next dev" || true
+migrate-dev: _wait_pg_ready ## chạy interactive migration (dev)
+	@echo "Running: npx prisma migrate dev (inside app container)..."
+	@$(DC) $(COMPOSE) exec -u root app npx prisma migrate dev
 
-clean: ## Xóa node_modules và .next
-	rm -rf node_modules .next .turbo
+migrate-deploy: _wait_pg_ready ## chạy production migration non-interactive
+	@echo "Running: npx prisma migrate deploy (inside app container)..."
+	@$(DC) $(COMPOSE) exec app npx prisma migrate deploy
 
-db-up: ## Khởi động PostgreSQL với Docker
-	docker-compose -f docker-compose.dev.yml up -d postgres
-	@echo "Waiting for database to be ready..."
-	@sleep 5
-	@echo "Database is ready!"
+seed: ## chạy seed script nếu có
+	@$(DC) $(COMPOSE) exec app npx prisma db seed
 
-db-down: ## Dừng PostgreSQL
-	docker-compose -f docker-compose.dev.yml down
+down: ## stop và remove containers (giữ volumes)
+	$(DC) $(COMPOSE) down
 
-dev-docker: ## Chạy development với Docker (app + database)
-	docker-compose -f docker-compose.dev.yml up
+reset: ## reset db (xóa volumes) và apply migration dev
+	$(DC) $(COMPOSE) down -v
+	$(DC) $(COMPOSE) up -d postgres
+	@$(DC) $(COMPOSE) exec -T postgres sh -c 'until pg_isready -U "${POSTGRES_USER:-postgres}"; do sleep 1; done'
+	@$(DC) $(COMPOSE) exec -u root app npx prisma migrate dev --name init --force
 
-db-reset: ## Reset database (xóa và tạo lại)
-	docker-compose -f docker-compose.dev.yml down -v
-	docker-compose -f docker-compose.dev.yml up -d postgres
-	@sleep 5
-	npx prisma migrate dev --name init
-
-db-migrate: ## Chạy database migrations
-	npx prisma migrate dev
-
-db-seed: ## Chạy database seed (tạo admin user mẫu)
-	npx prisma db seed
-
-db-studio: ## Mở Prisma Studio
-	npx prisma studio
-
-db-generate: ## Generate Prisma client
-	npx prisma generate
-
-docker-build: ## Build Docker image
-	docker-compose build
-
-docker-up: ## Khởi động tất cả services với Docker
-	docker-compose up -d
-	@echo "Waiting for services to be ready..."
-	@sleep 10
-	@echo "Services are ready!"
-
-docker-down: ## Dừng tất cả Docker services
-	docker-compose down
-
-docker-logs: ## Xem logs của Docker services
-	docker-compose logs -f
-
-docker-restart: ## Restart Docker services
-	docker-compose restart
-
-docker-clean: ## Xóa Docker containers, volumes và images
-	docker-compose down -v --rmi all
-
-test: ## Chạy tests
-	npm test || echo "No tests configured"
-
-lint: ## Chạy linter
-	npm run lint
-
-format: ## Format code
-	npx prettier --write "**/*.{ts,tsx,js,jsx,json,css,md}" || echo "Prettier not installed"
-
-setup: install db-up db-migrate ## Setup project lần đầu (install + database)
-	@echo "Setup completed!"
-	@echo "Run 'make dev' to start development server"
-
-setup-docker: docker-build docker-up ## Setup với Docker
-	@echo "Waiting for database to be ready..."
-	@sleep 10
-	@echo "Run migrations inside container:"
-	@echo "  docker-compose exec app npx prisma migrate deploy"
-	@echo "Or create admin user:"
-	@echo "  docker-compose exec app npx prisma studio"
-
+logs:
+	$(DC) $(COMPOSE) logs -f

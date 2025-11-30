@@ -5,6 +5,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 
+export const dynamic = 'force-dynamic'
+
 interface ContactDetailPageProps {
   params: { id: string }
 }

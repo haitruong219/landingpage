@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminSettingsPage() {
   const settings = await prisma.setting.findMany()
   const settingsMap = Object.fromEntries(settings.map(s => [s.key, s.value]))

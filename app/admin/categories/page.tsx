@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/Button'
 import { DeleteCategoryButton } from './DeleteCategoryButton'
 import Link from 'next/link'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminCategoriesPage() {
   const categories = await prisma.category.findMany({
     include: { _count: { select: { posts: true } } },
