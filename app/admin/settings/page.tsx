@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
+import { LanguageSettings } from '@/components/admin/LanguageSettings'
 
 export const dynamic = 'force-dynamic'
 
@@ -14,6 +15,7 @@ export default async function AdminSettingsPage() {
     <div>
       <h1 className="text-3xl font-bold mb-8">Cài đặt hệ thống</h1>
       <div className="space-y-6">
+        <LanguageSettings />
         <Card>
           <CardHeader>
             <CardTitle>Cấu hình Email</CardTitle>

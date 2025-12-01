@@ -1,16 +1,28 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
+
+type Props = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'policy' })
+
+  return {
+    title: t('title'),
+    description: t('privacyDescription'),
+  }
+}
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: 'Chính sách',
-  description: 'Chính sách bảo mật và điều khoản sử dụng',
-}
+export default async function PolicyPage() {
+  const t = await getTranslations('policy')
 
-export default function PolicyPage() {
   return (
     <>
       <Header />
@@ -18,21 +30,21 @@ export default function PolicyPage() {
         <div className="container mx-auto px-4 max-w-4xl">
           <Card>
             <CardHeader>
-              <CardTitle>Chính sách bảo mật</CardTitle>
+              <CardTitle>{t('privacyTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="prose">
               <p>
-                Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn. Mọi thông tin bạn cung cấp sẽ được bảo mật và chỉ sử dụng cho mục đích liên hệ.
+                {t('privacyDescription')}
               </p>
             </CardContent>
           </Card>
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle>Điều khoản sử dụng</CardTitle>
+              <CardTitle>{t('termsTitle')}</CardTitle>
             </CardHeader>
             <CardContent className="prose">
               <p>
-                Bằng việc sử dụng website này, bạn đồng ý với các điều khoản và điều kiện của chúng tôi.
+                {t('termsDescription')}
               </p>
             </CardContent>
           </Card>

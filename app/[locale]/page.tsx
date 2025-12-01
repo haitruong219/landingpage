@@ -6,15 +6,26 @@ import { BlogPreview } from '@/components/sections/BlogPreview'
 import { ProductsCarousel } from '@/components/sections/ProductsCarousel'
 import { PartnersCarousel } from '@/components/sections/PartnersCarousel'
 import { CTA } from '@/components/sections/CTA'
+import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Trang chủ',
-  description: 'Website giới thiệu sản phẩm và dịch vụ chất lượng cao',
-  openGraph: {
-    title: 'Trang chủ',
-    description: 'Website giới thiệu sản phẩm và dịch vụ chất lượng cao',
-  },
+type Props = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'metadata.home' })
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+    },
+  }
 }
 
 export const dynamic = 'force-dynamic'
@@ -35,3 +46,4 @@ export default function Home() {
     </>
   )
 }
+

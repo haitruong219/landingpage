@@ -1,6 +1,12 @@
-import Link from 'next/link'
+'use client'
+
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/routing'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 
 export function Header() {
+  const t = useTranslations('header')
+
   return (
     <header className="border-b">
       <div className="container mx-auto px-4 py-4">
@@ -10,14 +16,15 @@ export function Header() {
           </Link>
           <div className="flex items-center gap-6">
             <Link href="/" className="hover:text-blue-600 transition-colors">
-              Trang chủ
+              {t('home')}
             </Link>
             <Link href="/blog" className="hover:text-blue-600 transition-colors">
-              Tin tức
+              {t('blog')}
             </Link>
             <Link href="/contact" className="hover:text-blue-600 transition-colors">
-              Liên hệ
+              {t('contact')}
             </Link>
+            <LanguageSwitcher />
           </div>
         </nav>
       </div>

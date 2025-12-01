@@ -1,10 +1,13 @@
-import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
+import { Link } from '@/i18n/routing'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { prisma } from '@/lib/prisma'
 import { formatDate } from '@/lib/utils'
 import Image from 'next/image'
 
 export async function BlogPreview() {
+  const t = await getTranslations('blog')
+
   let posts: Array<{
     id: string
     title: string
@@ -35,9 +38,9 @@ export async function BlogPreview() {
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Tin mới nhất</h2>
+          <h2 className="text-4xl font-bold mb-4">{t('title')}</h2>
           <p className="text-gray-600 text-lg">
-            Cập nhật những thông tin mới nhất từ chúng tôi
+            {t('subtitle')}
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -75,7 +78,7 @@ export async function BlogPreview() {
             href="/blog"
             className="inline-block text-blue-600 hover:text-blue-700 font-medium"
           >
-            Xem tất cả tin tức →
+            {t('viewAll')}
           </Link>
         </div>
       </div>

@@ -6,16 +6,17 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 
-interface BlogPostPageProps {
-  params: { slug: string }
+type Props = {
+  params: Promise<{ locale: string; slug: string }>
 }
 
 export const dynamic = 'force-dynamic'
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
+    const { slug } = await params
     const post = await prisma.post.findUnique({
-      where: { slug: params.slug },
+      where: { slug },
       include: { category: true },
     })
 
@@ -37,9 +38,11 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+export default async function BlogPostPage({ params }: Props) {
+  const { slug } = await params
+  
   const post = await prisma.post.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
     include: { category: true },
   })
 

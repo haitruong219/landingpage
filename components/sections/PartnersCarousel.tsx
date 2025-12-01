@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 
 interface Partner {
@@ -11,6 +12,7 @@ interface Partner {
 }
 
 export function PartnersCarousel() {
+  const t = useTranslations('partners')
   const [partners, setPartners] = useState<Partner[]>([])
 
   useEffect(() => {
@@ -34,9 +36,9 @@ export function PartnersCarousel() {
     <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4">Đối tác</h2>
+          <h2 className="text-4xl font-bold mb-4">{t('title')}</h2>
           <p className="text-gray-600 text-lg">
-            Những đối tác tin cậy của chúng tôi
+            {t('subtitle')}
           </p>
         </div>
         <div className="flex gap-8 overflow-x-auto justify-center items-center">

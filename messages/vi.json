@@ -1,0 +1,117 @@
+{
+  "common": {
+    "logo": "Logo",
+    "home": "Trang chủ",
+    "blog": "Tin tức",
+    "contact": "Liên hệ",
+    "policy": "Chính sách",
+    "readMore": "Đọc thêm",
+    "learnMore": "Tìm hiểu thêm",
+    "contactNow": "Liên hệ ngay",
+    "allRightsReserved": "Tất cả quyền được bảo lưu"
+  },
+  "header": {
+    "home": "Trang chủ",
+    "blog": "Tin tức",
+    "contact": "Liên hệ"
+  },
+  "footer": {
+    "aboutUs": "Về chúng tôi",
+    "aboutDescription": "Website giới thiệu sản phẩm và dịch vụ chất lượng cao.",
+    "links": "Liên kết",
+    "contactTitle": "Liên hệ",
+    "email": "Email",
+    "phone": "Điện thoại"
+  },
+  "hero": {
+    "title": "Giải pháp tốt nhất cho doanh nghiệp của bạn",
+    "description": "Chúng tôi cung cấp các sản phẩm và dịch vụ chất lượng cao, đáp ứng mọi nhu cầu của bạn.",
+    "contactButton": "Liên hệ ngay",
+    "learnMoreButton": "Tìm hiểu thêm"
+  },
+  "features": {
+    "title": "Tính năng nổi bật",
+    "subtitle": "Những tính năng làm nên sự khác biệt của chúng tôi",
+    "feature1": {
+      "title": "Tính năng 1",
+      "description": "Mô tả chi tiết về tính năng nổi bật đầu tiên của sản phẩm."
+    },
+    "feature2": {
+      "title": "Tính năng 2",
+      "description": "Mô tả chi tiết về tính năng nổi bật thứ hai của sản phẩm."
+    },
+    "feature3": {
+      "title": "Tính năng 3",
+      "description": "Mô tả chi tiết về tính năng nổi bật thứ ba của sản phẩm."
+    }
+  },
+  "blog": {
+    "title": "Tin tức mới nhất",
+    "subtitle": "Cập nhật những thông tin mới nhất từ chúng tôi",
+    "readMore": "Đọc thêm",
+    "noPosts": "Chưa có bài viết nào",
+    "categories": "Danh mục",
+    "allCategories": "Tất cả",
+    "viewAll": "Xem tất cả tin tức →",
+    "pageTitle": "Tin tức",
+    "previous": "Trước",
+    "next": "Sau"
+  },
+  "products": {
+    "title": "Sản phẩm & Dịch vụ",
+    "subtitle": "Khám phá các sản phẩm và dịch vụ của chúng tôi",
+    "viewDetails": "Xem chi tiết",
+    "descriptionPlaceholder": "Mô tả sản phẩm..."
+  },
+  "partners": {
+    "title": "Đối tác",
+    "subtitle": "Những đối tác tin cậy của chúng tôi"
+  },
+  "cta": {
+    "title": "Sẵn sàng bắt đầu?",
+    "description": "Liên hệ với chúng tôi ngay hôm nay để được tư vấn miễn phí",
+    "button": "Liên hệ ngay"
+  },
+  "policy": {
+    "title": "Chính sách bảo mật",
+    "privacyTitle": "Chính sách bảo mật",
+    "privacyDescription": "Chúng tôi cam kết bảo vệ thông tin cá nhân của bạn. Mọi thông tin bạn cung cấp sẽ được bảo mật và chỉ sử dụng cho mục đích liên hệ.",
+    "termsTitle": "Điều khoản sử dụng",
+    "termsDescription": "Bằng việc sử dụng website này, bạn đồng ý với các điều khoản và điều kiện của chúng tôi."
+  },
+  "contact": {
+    "title": "Liên hệ với chúng tôi",
+    "subtitle": "Điền form bên dưới để gửi tin nhắn cho chúng tôi",
+    "name": "Họ tên",
+    "nameRequired": "Vui lòng nhập họ tên",
+    "email": "Email",
+    "emailInvalid": "Email không hợp lệ",
+    "phone": "Số điện thoại",
+    "message": "Nội dung",
+    "messageMin": "Nội dung phải có ít nhất 10 ký tự",
+    "send": "Gửi tin nhắn",
+    "sending": "Đang gửi...",
+    "success": "Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi sớm nhất có thể.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại sau.",
+    "required": "*"
+  },
+  "metadata": {
+    "home": {
+      "title": "Trang chủ",
+      "description": "Website giới thiệu sản phẩm và dịch vụ chất lượng cao"
+    },
+    "siteTitle": "Landing Page",
+    "siteDescription": "Website giới thiệu sản phẩm"
+  },
+  "error": {
+    "title": "Có lỗi xảy ra!",
+    "unknownError": "Đã xảy ra lỗi không xác định",
+    "tryAgain": "Thử lại"
+  },
+  "notFound": {
+    "title": "Trang không tìm thấy",
+    "description": "Trang bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "backHome": "Về trang chủ"
+  }
+}
+

@@ -84,6 +84,17 @@ async function main() {
 
   console.log('Created post:', post.title)
 
+  const enabledLocalesSetting = await prisma.setting.upsert({
+    where: { key: 'enabled_locales' },
+    update: {},
+    create: {
+      key: 'enabled_locales',
+      value: JSON.stringify(['vi']),
+    },
+  })
+
+  console.log('Created default language settings (Vietnamese only)')
+
   console.log('Seeding completed!')
 }
 

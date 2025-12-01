@@ -1,0 +1,117 @@
+{
+  "common": {
+    "logo": "Logo",
+    "home": "Home",
+    "blog": "News",
+    "contact": "Contact",
+    "policy": "Policy",
+    "readMore": "Read more",
+    "learnMore": "Learn more",
+    "contactNow": "Contact now",
+    "allRightsReserved": "All rights reserved"
+  },
+  "header": {
+    "home": "Home",
+    "blog": "News",
+    "contact": "Contact"
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "aboutDescription": "Website introducing high-quality products and services.",
+    "links": "Links",
+    "contactTitle": "Contact",
+    "email": "Email",
+    "phone": "Phone"
+  },
+  "hero": {
+    "title": "The best solution for your business",
+    "description": "We provide high-quality products and services that meet all your needs.",
+    "contactButton": "Contact now",
+    "learnMoreButton": "Learn more"
+  },
+  "features": {
+    "title": "Featured Features",
+    "subtitle": "Features that make us different",
+    "feature1": {
+      "title": "Feature 1",
+      "description": "Detailed description of the first outstanding feature of the product."
+    },
+    "feature2": {
+      "title": "Feature 2",
+      "description": "Detailed description of the second outstanding feature of the product."
+    },
+    "feature3": {
+      "title": "Feature 3",
+      "description": "Detailed description of the third outstanding feature of the product."
+    }
+  },
+  "blog": {
+    "title": "Latest News",
+    "subtitle": "Stay updated with the latest information from us",
+    "readMore": "Read more",
+    "noPosts": "No posts yet",
+    "categories": "Categories",
+    "allCategories": "All",
+    "viewAll": "View all news →",
+    "pageTitle": "News",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "products": {
+    "title": "Products & Services",
+    "subtitle": "Discover our products and services",
+    "viewDetails": "View details",
+    "descriptionPlaceholder": "Product description..."
+  },
+  "partners": {
+    "title": "Partners",
+    "subtitle": "Our trusted partners"
+  },
+  "cta": {
+    "title": "Ready to get started?",
+    "description": "Contact us today for a free consultation",
+    "button": "Contact now"
+  },
+  "policy": {
+    "title": "Privacy Policy",
+    "privacyTitle": "Privacy Policy",
+    "privacyDescription": "We are committed to protecting your personal information. All information you provide will be kept confidential and used only for contact purposes.",
+    "termsTitle": "Terms of Use",
+    "termsDescription": "By using this website, you agree to our terms and conditions."
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Fill out the form below to send us a message",
+    "name": "Full name",
+    "nameRequired": "Please enter your name",
+    "email": "Email",
+    "emailInvalid": "Invalid email",
+    "phone": "Phone number",
+    "message": "Message",
+    "messageMin": "Message must be at least 10 characters",
+    "send": "Send message",
+    "sending": "Sending...",
+    "success": "Thank you for contacting us! We will respond as soon as possible.",
+    "error": "An error occurred. Please try again later.",
+    "required": "*"
+  },
+  "metadata": {
+    "home": {
+      "title": "Home",
+      "description": "Website introducing high-quality products and services"
+    },
+    "siteTitle": "Landing Page",
+    "siteDescription": "Website introducing products"
+  },
+  "error": {
+    "title": "An error occurred!",
+    "unknownError": "An unknown error occurred",
+    "tryAgain": "Try again"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist or has been deleted.",
+    "backHome": "Back to home"
+  }
+}
+

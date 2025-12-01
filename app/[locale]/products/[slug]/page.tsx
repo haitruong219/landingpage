@@ -5,13 +5,14 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import type { Metadata } from 'next'
 
-interface ProductPageProps {
-  params: { slug: string }
+type Props = {
+  params: Promise<{ locale: string; slug: string }>
 }
 
-export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
   const product = await prisma.product.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   })
 
   if (!product) {
@@ -29,9 +30,10 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   }
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params
   const product = await prisma.product.findUnique({
-    where: { slug: params.slug },
+    where: { slug },
   })
 
   if (!product) {
