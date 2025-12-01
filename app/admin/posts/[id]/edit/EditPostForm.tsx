@@ -8,15 +8,23 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
+import { FileUpload } from '@/components/admin/FileUpload'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 
 const postSchema = z.object({
   title: z.string().min(1, 'Vui lòng nhập tiêu đề'),
   slug: z.string().min(1, 'Vui lòng nhập slug'),
-  content: z.string().min(10, 'Nội dung phải có ít nhất 10 ký tự'),
+  content: z.string().min(1, 'Vui lòng nhập nội dung'),
   excerpt: z.string().optional(),
   coverImage: z.string().optional(),
   published: z.boolean().default(false),
   categoryId: z.string().optional(),
+}).refine((data) => {
+  const textContent = data.content.replace(/<[^>]*>/g, '').trim()
+  return textContent.length >= 10
+}, {
+  message: 'Nội dung phải có ít nhất 10 ký tự',
+  path: ['content'],
 })
 
 type PostFormData = z.infer<typeof postSchema>
@@ -43,6 +51,8 @@ export default function EditPostForm({ post, categories }: EditPostFormProps) {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
     defaultValues: {
@@ -55,6 +65,9 @@ export default function EditPostForm({ post, categories }: EditPostFormProps) {
       categoryId: post.categoryId || '',
     },
   })
+
+  const content = watch('content')
+  const coverImage = watch('coverImage')
 
   const onSubmit = async (data: PostFormData) => {
     setIsSubmitting(true)
@@ -90,9 +103,10 @@ export default function EditPostForm({ post, categories }: EditPostFormProps) {
         {...register('slug')}
         error={errors.slug?.message}
       />
-      <Input
+      <FileUpload
         label="Ảnh cover"
-        {...register('coverImage')}
+        value={coverImage}
+        onChange={(url) => setValue('coverImage', url)}
         error={errors.coverImage?.message}
       />
       <div>
@@ -119,10 +133,11 @@ export default function EditPostForm({ post, categories }: EditPostFormProps) {
         <label className="block text-sm font-medium mb-1">
           Nội dung *
         </label>
-        <Textarea
-          rows={15}
-          {...register('content')}
+        <RichTextEditor
+          value={content}
+          onChange={(value) => setValue('content', value)}
           error={errors.content?.message}
+          placeholder="Nội dung của bài viết đầu tiên ở đây"
         />
       </div>
       <div className="flex items-center gap-2">

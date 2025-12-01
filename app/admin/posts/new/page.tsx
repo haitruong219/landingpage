@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,15 +9,23 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { FileUpload } from '@/components/admin/FileUpload'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 
 const postSchema = z.object({
   title: z.string().min(1, 'Vui lòng nhập tiêu đề'),
   slug: z.string().min(1, 'Vui lòng nhập slug'),
-  content: z.string().min(10, 'Nội dung phải có ít nhất 10 ký tự'),
+  content: z.string().min(1, 'Vui lòng nhập nội dung'),
   excerpt: z.string().optional(),
   coverImage: z.string().optional(),
   published: z.boolean().default(false),
   categoryId: z.string().optional(),
+}).refine((data) => {
+  const textContent = data.content.replace(/<[^>]*>/g, '').trim()
+  return textContent.length >= 10
+}, {
+  message: 'Nội dung phải có ít nhất 10 ký tự',
+  path: ['content'],
 })
 
 type PostFormData = z.infer<typeof postSchema>
@@ -25,6 +33,7 @@ type PostFormData = z.infer<typeof postSchema>
 export default function NewPostPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [categories, setCategories] = useState<Array<{ id: string; name: string }>>([])
 
   const {
     register,
@@ -36,8 +45,20 @@ export default function NewPostPage() {
     resolver: zodResolver(postSchema),
     defaultValues: {
       published: false,
+      content: '',
+      coverImage: '',
     },
   })
+
+  const content = watch('content')
+  const coverImage = watch('coverImage')
+
+  useEffect(() => {
+    fetch('/api/admin/categories')
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch(() => {})
+  }, [])
 
   const onSubmit = async (data: PostFormData) => {
     setIsSubmitting(true)
@@ -80,11 +101,26 @@ export default function NewPostPage() {
               {...register('slug')}
               error={errors.slug?.message}
             />
-            <Input
+            <FileUpload
               label="Ảnh cover"
-              {...register('coverImage')}
+              value={coverImage}
+              onChange={(url) => setValue('coverImage', url)}
               error={errors.coverImage?.message}
             />
+            <div>
+              <label className="block text-sm font-medium mb-1">Danh mục</label>
+              <select
+                {...register('categoryId')}
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm"
+              >
+                <option value="">Không có danh mục</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
             <Textarea
               label="Mô tả ngắn"
               rows={3}
@@ -95,10 +131,11 @@ export default function NewPostPage() {
               <label className="block text-sm font-medium mb-1">
                 Nội dung *
               </label>
-              <Textarea
-                rows={15}
-                {...register('content')}
+              <RichTextEditor
+                value={content}
+                onChange={(value) => setValue('content', value)}
                 error={errors.content?.message}
+                placeholder="Nội dung của bài viết đầu tiên ở đây"
               />
             </div>
             <div className="flex items-center gap-2">
