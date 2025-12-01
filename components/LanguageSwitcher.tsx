@@ -1,10 +1,8 @@
 'use client'
 
 import { useLocale } from 'next-intl'
-import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { Link } from '@/i18n/routing'
-import { routing } from '@/i18n/routing'
+import { Link, usePathname } from '@/i18n/routing'
 import type { Locale } from '@/lib/i18n-settings'
 
 export function LanguageSwitcher() {
@@ -16,16 +14,15 @@ export function LanguageSwitcher() {
     fetch('/api/languages')
       .then(res => res.json())
       .then(data => {
-        if (data.enabledLocales) {
+        if (data.enabledLocales && Array.isArray(data.enabledLocales)) {
           setEnabledLocales(data.enabledLocales)
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error('Failed to fetch enabled locales:', error)
         setEnabledLocales(['vi'])
       })
   }, [])
-
-  const pathnameWithoutLocale = pathname.replace(`/${locale}`, '') || '/'
 
   if (enabledLocales.length <= 1) {
     return null
@@ -36,12 +33,12 @@ export function LanguageSwitcher() {
       {enabledLocales.map((loc) => (
         <Link
           key={loc}
-          href={pathnameWithoutLocale}
+          href={pathname}
           locale={loc}
           className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
             locale === loc
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              ? 'bg-blue-600 text-white cursor-default'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer'
           }`}
         >
           {loc.toUpperCase()}
