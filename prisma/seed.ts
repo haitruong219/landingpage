@@ -20,6 +20,43 @@ async function main() {
 
   console.log('Created admin user:', admin.email)
 
+  const testUsers = [
+    {
+      email: 'user1@example.com',
+      password: await bcrypt.hash('password123', 10),
+      name: 'Test User 1',
+    },
+    {
+      email: 'user2@example.com',
+      password: await bcrypt.hash('password123', 10),
+      name: 'Test User 2',
+    },
+    {
+      email: 'john.doe@example.com',
+      password: await bcrypt.hash('password123', 10),
+      name: 'John Doe',
+    },
+    {
+      email: 'jane.smith@example.com',
+      password: await bcrypt.hash('password123', 10),
+      name: 'Jane Smith',
+    },
+    {
+      email: 'demo@example.com',
+      password: await bcrypt.hash('demo123', 10),
+      name: 'Demo User',
+    },
+  ]
+
+  for (const userData of testUsers) {
+    const user = await prisma.user.upsert({
+      where: { email: userData.email },
+      update: {},
+      create: userData,
+    })
+    console.log('Created test user:', user.email)
+  }
+
   const category = await prisma.category.upsert({
     where: { slug: 'tin-tuc' },
     update: {},

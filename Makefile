@@ -1,4 +1,4 @@
-.PHONY: help up down logs install migrate
+.PHONY: help up down logs install migrate seed
 
 help:
 	@echo "Commands:"
@@ -7,6 +7,7 @@ help:
 	@echo "  make down    - Stop containers"
 	@echo "  make logs    - Show logs"
 	@echo "  make migrate - Run database migrations"
+	@echo "  make seed    - Seed database with test data"
 
 install:
 	@if [ ! -f package.json ]; then \
@@ -52,3 +53,11 @@ migrate:
 	fi
 	@echo "Running database migrations..."
 	docker-compose exec app npx prisma migrate dev
+
+seed:
+	@if ! docker-compose ps | grep -q "landingpage_app.*Up"; then \
+		echo "Error: App container is not running. Run 'make up' first."; \
+		exit 1; \
+	fi
+	@echo "Seeding database with test data..."
+	docker-compose exec app npm run db:seed

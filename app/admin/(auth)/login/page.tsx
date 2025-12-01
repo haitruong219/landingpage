@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 
 const loginSchema = z.object({
-  email: z.string().email('Email không hợp lệ'),
+  email: z.string().min(1, 'Vui lòng nhập email').email('Email không hợp lệ'),
   password: z.string().min(1, 'Vui lòng nhập mật khẩu'),
 })
 
@@ -28,6 +28,7 @@ export default function AdminLoginPage() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    mode: 'onSubmit',
   })
 
   const onSubmit = async (data: LoginFormData) => {
