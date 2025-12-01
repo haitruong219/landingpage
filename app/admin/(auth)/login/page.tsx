@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function AdminLoginPage() {
   const router = useRouter()
+  const { update } = useSession()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -44,13 +45,14 @@ export default function AdminLoginPage() {
 
       if (result?.error) {
         setError('Email hoặc mật khẩu không đúng')
+        setIsLoading(false)
       } else {
+        await update()
         router.push('/admin')
         router.refresh()
       }
     } catch (error) {
       setError('Có lỗi xảy ra. Vui lòng thử lại.')
-    } finally {
       setIsLoading(false)
     }
   }
