@@ -5,7 +5,7 @@ import { isAdminSubdomain } from './lib/subdomain'
 
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
-  const pathname = request.nextUrl.pathname
+  let pathname = request.nextUrl.pathname
   const isAdmin = isAdminSubdomain(hostname)
   
   if (pathname.startsWith('/admin')) {
@@ -16,25 +16,61 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url)
     }
     
-    if (pathname !== '/admin/login') {
+    const normalizedPath = pathname.replace(/^\/admin/, '') || '/'
+    
+    if (normalizedPath !== '/login') {
       const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
       if (!token) {
-        const loginUrl = new URL('/admin/login', request.url)
+        const loginUrl = new URL('/login', request.url)
         loginUrl.host = request.headers.get('host') || ''
         return NextResponse.redirect(loginUrl)
       }
-    } else {
-      const response = NextResponse.next()
-      response.headers.set('x-is-login-page', 'true')
-      response.headers.set('x-pathname', pathname)
-      return response
     }
+    
+    const url = request.nextUrl.clone()
+    url.pathname = pathname
+    const response = NextResponse.rewrite(url)
+    response.headers.set('x-is-admin-subdomain', 'true')
+    response.headers.set('x-original-pathname', pathname)
+    response.headers.set('x-normalized-pathname', normalizedPath)
+    return response
   }
   
-  if (isAdmin && !pathname.startsWith('/admin') && !pathname.startsWith('/api')) {
+  if (isAdmin && !pathname.startsWith('/api')) {
+    if (pathname === '/login') {
+      const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+      if (token) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/'
+        return NextResponse.redirect(url)
+      }
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin/login'
+      const response = NextResponse.rewrite(url)
+      response.headers.set('x-is-admin-subdomain', 'true')
+      response.headers.set('x-is-login-page', 'true')
+      return response
+    }
+    
+    if (pathname === '/' || pathname === '') {
+      const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
+      if (!token) {
+        const loginUrl = new URL('/login', request.url)
+        loginUrl.host = request.headers.get('host') || ''
+        return NextResponse.redirect(loginUrl)
+      }
+      const url = request.nextUrl.clone()
+      url.pathname = '/admin'
+      const response = NextResponse.rewrite(url)
+      response.headers.set('x-is-admin-subdomain', 'true')
+      return response
+    }
+    
     const url = request.nextUrl.clone()
-    url.pathname = '/admin'
-    return NextResponse.redirect(url)
+    url.pathname = `/admin${pathname}`
+    const response = NextResponse.rewrite(url)
+    response.headers.set('x-is-admin-subdomain', 'true')
+    return response
   }
   
   return NextResponse.next()

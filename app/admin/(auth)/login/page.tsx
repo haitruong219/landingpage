@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { useIsAdminSubdomain, getAdminPath } from '@/lib/use-admin-path'
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Vui lòng nhập email').email('Email không hợp lệ'),
@@ -20,6 +21,8 @@ type LoginFormData = z.infer<typeof loginSchema>
 export default function AdminLoginPage() {
   const router = useRouter()
   const { update } = useSession()
+  const isAdminSubdomain = useIsAdminSubdomain()
+  const dashboardPath = getAdminPath('/', isAdminSubdomain)
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -48,7 +51,7 @@ export default function AdminLoginPage() {
         setIsLoading(false)
       } else {
         await update()
-        router.push('/admin')
+        router.push(dashboardPath)
         router.refresh()
       }
     } catch (error) {

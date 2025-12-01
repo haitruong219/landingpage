@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { SignOutButton } from './layout/SignOutButton'
 import { useEffect, useState } from 'react'
+import { useIsAdminSubdomain, getAdminPath } from '@/lib/use-admin-path'
 
 const useSafeSession = () => {
   try {
@@ -23,10 +24,18 @@ const AdminLayout = ({
   const pathname = usePathname()
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const isAdminSubdomain = useIsAdminSubdomain()
   const sessionResult = useSafeSession()
   const session = sessionResult?.data
   const status = sessionResult?.status || 'loading'
-  const isLoginPage = pathname === '/admin/login'
+  const isLoginPage = pathname === '/admin/login' || (isAdminSubdomain && pathname === '/login')
+  
+  const loginPath = getAdminPath('/login', isAdminSubdomain)
+  const dashboardPath = getAdminPath('/', isAdminSubdomain)
+  const postsPath = getAdminPath('/posts', isAdminSubdomain)
+  const categoriesPath = getAdminPath('/categories', isAdminSubdomain)
+  const contactsPath = getAdminPath('/contacts', isAdminSubdomain)
+  const settingsPath = getAdminPath('/settings', isAdminSubdomain)
 
   useEffect(() => {
     setMounted(true)
@@ -34,9 +43,9 @@ const AdminLayout = ({
 
   useEffect(() => {
     if (mounted && status === 'unauthenticated' && !isLoginPage) {
-      router.push('/admin/login')
+      router.push(loginPath)
     }
-  }, [mounted, status, isLoginPage, router])
+  }, [mounted, status, isLoginPage, router, loginPath])
 
   if (isLoginPage) {
     return <>{children}</>
@@ -55,7 +64,7 @@ const AdminLayout = ({
       <nav className="bg-white border-b">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
-            <Link href="/admin" className="text-xl font-bold">
+            <Link href={dashboardPath} className="text-xl font-bold">
               Admin Panel
             </Link>
             <div className="flex items-center gap-4">
@@ -70,31 +79,31 @@ const AdminLayout = ({
           <aside className="w-64">
             <nav className="space-y-2">
               <Link
-                href="/admin"
+                href={dashboardPath}
                 className="block px-4 py-2 rounded hover:bg-gray-100"
               >
                 Dashboard
               </Link>
               <Link
-                href="/admin/posts"
+                href={postsPath}
                 className="block px-4 py-2 rounded hover:bg-gray-100"
               >
                 Bài viết
               </Link>
               <Link
-                href="/admin/categories"
+                href={categoriesPath}
                 className="block px-4 py-2 rounded hover:bg-gray-100"
               >
                 Danh mục
               </Link>
               <Link
-                href="/admin/contacts"
+                href={contactsPath}
                 className="block px-4 py-2 rounded hover:bg-gray-100"
               >
                 Liên hệ
               </Link>
               <Link
-                href="/admin/settings"
+                href={settingsPath}
                 className="block px-4 py-2 rounded hover:bg-gray-100"
               >
                 Cài đặt
